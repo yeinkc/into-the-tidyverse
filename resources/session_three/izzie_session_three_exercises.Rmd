@@ -1,0 +1,89 @@
+---
+title: "Into the Tidyverse"
+subtitle: "Session Three Exercises"
+output: html_notebook
+---
+
+Remember, before you can use the tidyverse, you need to load the package.
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+## Back to the Basics
+
+#### Arithmetic with Boolean Values
+
+1. What is the value of `5 + TRUE`?
+2. What about `5 + FALSE`?
+3. What is the significance of the sum (`sum()`) of a logical vector?
+4. What about the mean?
+5. Why is it true that `FALSE < TRUE`? How would this affect ordering by a logical column using `arrange()`
+
+
+## The dpylr verbs
+
+### Filter
+
+1. What is the carat of the highest priced diamond in the the `diamond` dataset? (A condition such as `price == max(price)` may be useful)
+2. For each year in the `mpg` dataset, which car has the smallest engine size? Question 4 may be helpful. Note that you can use `group_by()` before `filter()` to change the scope of any aggregate functions
+3. Select all flowers from the `iris` dataset where either the petal length is greater than 6.4 or the petal width is greater than 2.4 (there should be 7 of these)
+
+### Arrange
+
+1. Look at the column types when you print `mpg` and `diamonds` to the console. What order do you get when you arrange `mpg` by `class` and what order do you get when you arrange `diamonds` by `cut`. Why is this?
+2. Order the cars in `mpg` by the difference between their city and highway mileage (biggest difference first) - if you wanted to do this properly you should use the `abs()` function, or you can use a filter to check that there are no cars with city mileage higher than highway mileage
+
+### Select
+
+1. Select all columns apart from `price` in the diamonds dataset
+2. What does the following code do? 
+
+```{r eval=FALSE}
+select(mpg, 1, 2, 4, 11)
+```
+
+### Mutate
+
+1. Read the help page for `transmutate()`
+2. The `mpg` dataset currently has `trans` stored as a character. Convert this to a factor using `mutate()` and the `factor()` function
+3. Create a column called `is_automatic` which is `TRUE` if and only if a given car has automatic transmission. Don't forget to use `==` for comparison
+4. `mutate` can be combined with `group_by` to change the scope of aggregate functions. Use this to create a new variable in the `mpg` dataset called `best_in_class` which is `TRUE` if and only if the highway mileage is the highest out of all other cars in that class. (Hint: first group by class then use `hwy == max(hwy)`)
+5. Create a new column in the `diamonds` dataset called `expensive` which is `TRUE` if and only if the price of the diamond is above the upper quartile of all prices
+
+### Summarise
+
+1. What are the median values for each of the 4 numeric columns in the `iris` dataset?
+2. What is the price of the least expensive diamond of each cut?
+3. What is the mean ozone for each month in the `airquality` dataset? Make sure you ignore `NA`s
+4. For each cut and colour in the diamonds dataset, what is the range (`diff(range(...))`) of the carats?
+
+### Pipelines
+
+In this section, all code should be written by piping the output of each function into the next using `%>%`
+
+1. After removing all 2-seater cars, calculate the average of the city and highway mileage for each car and add this as a new column called `efficiency.` Group by manufacturer and the calculate the maximum efficiency for each group. Arrange these in descending order of efficiency
+2. Create a new column in the `iris` dataset called `Petal.Area` which is the product of the petal length and width. Create a similar column called `Sepal.Area`. Pipe this data frame into a call to `ggplot` to create a plot of these two variables, coloured by Species. Add a line of best fit for each species
+3. Formulate your own question about the `diamonds` dataset and use a pipeline to answer it
+
+## Going Beyond
+
+### Ranking
+
+1. Read the help page for `ranking`. In particular try to understand the difference between `row_number()`, `min_rank()`, `dense_rank()`. The others are of less use
+2. For each date in the `airquality` dataset, rank observations (think about which ranking method is most appropriate) by the intensity of solar radiation compared to other observations _in the same month_. Select only observations which have the 2nd highest solar radiation for each month
+3. For each year in the `mpg` dataset, rank the cars by city mileage so that the lowest mileage is ranked first. Select the cars that are ranked number one for each year
+
+### Un-grouping
+
+1. Try running the following code. What error message do you get?
+2. Run the code line by line, where do things go wrong?
+
+```{r eval=FALSE}
+as_tibble(Titanic) %>% 
+     group_by(Class, Age) %>% 
+     summarise(count = sum(n)) %>% 
+     mutate(Class = reorder(Class, count))
+```
+
+3. Read the help page for `ungroup`. How might you rectify this issue?
